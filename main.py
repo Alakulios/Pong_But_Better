@@ -37,6 +37,10 @@ paddle_width, paddle_height = 20, 120
 left_paddle_y = right_paddle_y = height/2 - paddle_height/2
 left_paddle_x, right_paddle_x = 100 - paddle_width/2, width - (100 - paddle_width/2)
 right_paddle_vel = left_paddle_vel = 0
+#second paddle
+second_left_paddle_y = second_right_paddle_y = height/2 - paddle_height/2
+second_left_paddle_x, second_right_paddle_x = 100 - paddle_width/2, width - (100 - paddle_width/2)
+second_right_paddle_vel = second_left_paddle_vel = 0
 
 #gadgets
 left_gadget = right_gadget = 0
@@ -51,23 +55,29 @@ while run:
         elif i.type == pygame.KEYDOWN:
             if i.key == pygame.K_UP:
                 right_paddle_vel = -0.9
+                second_right_paddle_vel = -0.9
             if i.key == pygame.K_DOWN:
                 right_paddle_vel = 0.9
+                second_right_paddle_vel = 0.9
             if i.key == pygame.K_RIGHT and right_gadget_remaining > 0:
                 right_gadget = 1
             if i.key == pygame.K_LEFT and right_gadget_remaining > 0:
                 right_gadget = 2
             if i.key == pygame.K_w:
                 left_paddle_vel = -0.9
+                second_left_paddle_vel = -0.9
             if i.key == pygame.K_s:
                 left_paddle_vel = 0.9
+                second_left_paddle_vel = 0.9
             if i.key == pygame.K_d and left_gadget_remaining > 0:
                 left_gadget = 1
             if i.key == pygame.K_a and left_gadget_remaining > 0:
                 left_gadget = 2
 
         if i.type == pygame.KEYUP:
+            second_right_paddle_vel = 0
             right_paddle_vel = 0
+            second_left_paddle_vel = 0
             left_paddle_vel = 0
 
     # ball's movement controls
@@ -79,6 +89,8 @@ while run:
     if ball_x >= width - radius:
         ball_x, ball_y = width/2 - radius, height/2 - radius
         dummy_ball_x, dummy_ball_y = width/2 - radius, height/2 - radius
+        second_left_paddle_y = left_paddle_y
+        second_right_paddle_y = right_paddle_y
         dir = random.choice(direction)
         ang = random.choice(angle)
         if dir == 0:
@@ -108,6 +120,8 @@ while run:
     if ball_x <= 0 + radius:
         ball_x, ball_y = width/2 - radius, height/2 - radius
         dummy_ball_x, dummy_ball_y = width/2 - radius, height/2 - radius
+        second_right_paddle_y = right_paddle_y
+        second_left_paddle_y = left_paddle_y
         if dir == 0:
             if ang == 0:
                 ball_vel_y, ball_vel_x = -1.4, 0.7
@@ -140,23 +154,64 @@ while run:
         right_paddle_y = height - paddle_height
     if right_paddle_y <= 0:
         right_paddle_y = 0
+    #second paddle's movement controls
+    if second_left_paddle_y >= height - paddle_height:
+        second_left_paddle_y = height - paddle_height
+    if second_left_paddle_y <= 0:
+        second_left_paddle_y = 0
+    if second_right_paddle_y >= height - paddle_height:
+        second_right_paddle_y = height - paddle_height
+    if second_right_paddle_y <= 0:
+        second_right_paddle_y = 0
 
     #paddle Collisions
     #left paddle
-    if left_paddle_x <= ball_x <= left_paddle_x + paddle_width:
-        if left_paddle_y <= ball_y <= left_paddle_y + paddle_height:
-            ball_x = left_paddle_x + paddle_width
-            dummy_ball_x = left_paddle_x + paddle_width
-            ball_vel_x *= -1
-            dummy_ball_vel_x *= -1
+    if second_left_paddle_y == left_paddle_y:
+        if left_paddle_x <= ball_x <= left_paddle_x + paddle_width:
+            if left_paddle_y <= ball_y <= left_paddle_y + paddle_height:
+                ball_x = left_paddle_x + paddle_width
+                dummy_ball_x = left_paddle_x + paddle_width
+                ball_vel_x *= -1
+                dummy_ball_vel_x *= -1
+
+    if second_left_paddle_y != left_paddle_y:
+        if left_paddle_x <= ball_x <= left_paddle_x + paddle_width:
+            if left_paddle_y <= ball_y <= left_paddle_y + paddle_height:
+                ball_x = left_paddle_x + paddle_width
+                dummy_ball_x = left_paddle_x + paddle_width
+                ball_vel_x *= -1
+                dummy_ball_vel_x *= -1
+
+        if second_left_paddle_x <= ball_x <= second_left_paddle_x + paddle_width:
+            if second_left_paddle_y <= ball_y <= second_left_paddle_y + paddle_height:
+                ball_x = left_paddle_x + paddle_width
+                dummy_ball_x = left_paddle_x + paddle_width
+                ball_vel_x *= -1
+                dummy_ball_vel_x *= -1
     
     #right paddle
-    if right_paddle_x <= ball_x <= right_paddle_x + paddle_width:
-        if right_paddle_y <= ball_y <= right_paddle_y + paddle_height:
-            ball_x = right_paddle_x
-            dummy_ball_x = right_paddle_x
-            ball_vel_x *= -1
-            dummy_ball_vel_x *= -1
+    if second_right_paddle_y == right_paddle_y:
+        if right_paddle_x <= ball_x <= right_paddle_x + paddle_width:
+            if right_paddle_y <= ball_y <= right_paddle_y + paddle_height:
+                ball_x = right_paddle_x
+                dummy_ball_x = right_paddle_x
+                ball_vel_x *= -1
+                dummy_ball_vel_x *= -1
+
+    if second_right_paddle_y != right_paddle_y:
+        if right_paddle_x <= ball_x <= right_paddle_x + paddle_width:
+            if right_paddle_y <= ball_y <= right_paddle_y + paddle_height:
+                ball_x = right_paddle_x
+                dummy_ball_x = right_paddle_x
+                ball_vel_x *= -1
+                dummy_ball_vel_x *= -1
+
+        if second_right_paddle_x <= ball_x <= second_right_paddle_x + paddle_width:
+            if second_right_paddle_y <= ball_y <= second_right_paddle_y + paddle_height:
+                ball_x = right_paddle_x
+                dummy_ball_x = right_paddle_x
+                ball_vel_x *= -1
+                dummy_ball_vel_x *= -1
 
     #gadgets in action 
     #boost & teleport 
@@ -229,6 +284,8 @@ while run:
     dummy_ball_y += dummy_ball_vel_y
     right_paddle_y += right_paddle_vel
     left_paddle_y += left_paddle_vel
+    second_left_paddle_y += second_left_paddle_vel
+    second_right_paddle_y += second_right_paddle_vel
 
     
 
@@ -238,6 +295,10 @@ while run:
 
     #dummy ball
     pygame.draw.circle(wn, BLUE, (dummy_ball_x, dummy_ball_y), radius)
+
+    #second paddle
+    pygame.draw.rect(wn, RED, pygame.Rect(second_left_paddle_x, second_left_paddle_y, paddle_width, paddle_height) )
+    pygame.draw.rect(wn, RED, pygame.Rect(second_right_paddle_x, second_right_paddle_y, paddle_width, paddle_height) )
 
     if left_gadget == 1:
         pygame.draw.circle(wn, WHITE,(left_paddle_x + 10, left_paddle_y + 10), 4)
