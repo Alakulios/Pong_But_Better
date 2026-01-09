@@ -14,6 +14,7 @@ width, height = 1000, 600
 wn = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Pong_But_Better")
 run = True
+player_1 = player_2 = 0
 direction = [0, 1]
 angle = [0, 1, 2]
 
@@ -87,6 +88,7 @@ while run:
         dummy_ball_vel_y *= -1
 
     if ball_x >= width - radius:
+        player_1 += 1
         ball_x, ball_y = width/2 - radius, height/2 - radius
         dummy_ball_x, dummy_ball_y = width/2 - radius, height/2 - radius
         second_left_paddle_y = left_paddle_y
@@ -118,6 +120,7 @@ while run:
         dummy_ball_vel_x *= -1 
 
     if ball_x <= 0 + radius:
+        player_2 += 1
         ball_x, ball_y = width/2 - radius, height/2 - radius
         dummy_ball_x, dummy_ball_y = width/2 - radius, height/2 - radius
         second_right_paddle_y = right_paddle_y
@@ -287,7 +290,17 @@ while run:
     second_left_paddle_y += second_left_paddle_vel
     second_right_paddle_y += second_right_paddle_vel
 
-    
+    #scoreboard    
+    font = pygame.font.SysFont('callibri', 32)
+    score_1 = font.render("Plaayer_1:" + str (player_1), True, WHITE)
+    wn.blit(score_1,(25,25))
+    score_2 = font.render("Plaayer_2:" + str (player_2), True, WHITE)
+    wn.blit(score_2,(825,25))
+    gad_left_1 = font.render("Gad Left: " + str(left_gadget_remaining), True, WHITE)
+    wn.blit(gad_left_1, (25,65))
+    gad_left_2 = font.render("Gad Left: " + str(right_gadget_remaining), True, WHITE)
+    wn.blit(gad_left_2, (825,65))
+
 
     pygame.draw.circle(wn, BLUE, (ball_x, ball_y), radius)
     pygame.draw.rect(wn, RED, pygame.Rect(left_paddle_x, left_paddle_y, paddle_width, paddle_height) )
