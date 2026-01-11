@@ -18,11 +18,47 @@ player_1 = player_2 = 0
 direction = [0, 1]
 angle = [0, 1, 2]
 
+game_over = False
+winner = None
+
+
 #color
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+
+#reset game
+def reset_game():
+    global ball_x, ball_y, ball_vel_x, ball_vel_y
+    global dummy_ball_x, dummy_ball_y, dummy_ball_vel_x, dummy_ball_vel_y
+    global left_paddle_y, right_paddle_y
+    global second_left_paddle_y, second_right_paddle_y
+    global left_gadget, right_gadget
+    global left_gadget_remaining, right_gadget_remaining
+    global player_1, player_2
+    global game_over, winner
+
+    player_1 = 0
+    player_2 = 0
+
+    ball_x, ball_y = width / 2, height / 2
+    dummy_ball_x, dummy_ball_y = width / 2, height / 2
+
+    ball_vel_x = random.choice([-1, 1]) * 0.7
+    ball_vel_y = random.choice([-1, 1]) * 0.7
+    dummy_ball_vel_x = ball_vel_x
+    dummy_ball_vel_y = ball_vel_y
+
+    left_paddle_y = right_paddle_y = height / 2 - paddle_height / 2
+    second_left_paddle_y = second_right_paddle_y = height / 2 - paddle_height / 2
+
+    left_gadget = right_gadget = 0
+    left_gadget_remaining = right_gadget_remaining = 5
+
+    game_over = False
+    winner = None
+
 
 #for the ball
 radius = 15
@@ -74,6 +110,10 @@ while run:
                 left_gadget = 1
             if i.key == pygame.K_a and left_gadget_remaining > 0:
                 left_gadget = 2
+            if i.type == pygame.KEYDOWN:
+                if i.key == pygame.K_r and game_over:
+                    reset_game()
+
 
         if i.type == pygame.KEYUP:
             second_right_paddle_vel = 0
@@ -317,6 +357,35 @@ while run:
         pygame.draw.circle(wn, WHITE,(left_paddle_x + 10, left_paddle_y + 10), 4)
     if right_gadget == 1:
         pygame.draw.circle(wn, WHITE,(right_paddle_x + 10, right_paddle_y + 10), 4)
+
+    #endscreen
+    winning_font = pygame.font.SysFont('callibri', 100)
+    if player_1 >= 3 and not game_over:
+        game_over = True
+        winner = "Player 1"
+
+    if player_2 >= 3 and not game_over:
+        game_over = True
+        winner = "Player 2"
+
+    if game_over:
+        wn.fill(BLACK)
+        endscreen = winning_font.render(f"{winner} Won!!!", True, WHITE)
+        wn.blit(endscreen, (200, 250))
+        restart_text = font.render("Press R to Restart", True, WHITE)
+        wn.blit(restart_text, (350, 320))
+
+
+    #stopping movement 
+    if not game_over:
+        ball_x += ball_vel_x
+        ball_y += ball_vel_y
+        dummy_ball_x += dummy_ball_vel_x
+        dummy_ball_y += dummy_ball_vel_y
+        right_paddle_y += right_paddle_vel
+        left_paddle_y += left_paddle_vel
+        second_left_paddle_y += second_left_paddle_vel
+        second_right_paddle_y += second_right_paddle_vel
 
 
     pygame.display.update() 
